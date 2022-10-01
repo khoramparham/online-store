@@ -14,15 +14,42 @@ module.exports = class Application {
     this.errorHandling();
   }
   configApplication() {
-    const path = require("path")
+    const path = require("path");
+    const swaggerUI = require("swagger-ui-express");
+    const swaggerJsdoc = require("swagger-jsdoc");
     this.#app.use(express.json());
     this.#app.use(express.urlencoded({ extended: true }));
     this.#app.use(express.static(path.join(__dirname, "..", "public")));
+    this.#app.use(
+      "/api-doc",
+      swaggerUI.serve,
+      swaggerUI.setup(
+        swaggerJsdoc({
+          swaggerDefinition: {
+            info: {
+              title: "Express API for online store ",
+              version: "1.0.0",
+              description: "This is a REST API application made with Express.",
+            },
+            contact: {
+              name: "parham khoram",
+              url: "https://www.linkedin.com/in/parhamkhoram",
+            },
+            servers: [
+              {
+                url: "http://localhost:3000",
+              },
+            ],
+          },
+          apis: ["./app/router/**/*.router.js"],
+        })
+      )
+    );
   }
   createServer() {
     const http = require("http");
     http.createServer(this.#app).listen(this.#PORT, () => {
-      console.log("Server run on port" + this.#PORT);
+      console.log("Server run on http://localhost:" + this.#PORT);
     });
   }
   connectToMongoDB() {
@@ -33,7 +60,7 @@ module.exports = class Application {
   }
   createRoutes() {
     const { AllRoutes } = require("./router/router");
-    this.#app.use(AllRoutes)
+    this.#app.use(AllRoutes);
   }
   errorHandling() {
     this.#app.use((req, res, next) => {
