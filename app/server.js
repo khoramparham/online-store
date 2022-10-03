@@ -14,12 +14,14 @@ module.exports = class Application {
     this.errorHandling();
   }
   configApplication() {
+    // app config
     const path = require("path");
-    const swaggerUI = require("swagger-ui-express");
-    const swaggerJsdoc = require("swagger-jsdoc");
     this.#app.use(express.json());
     this.#app.use(express.urlencoded({ extended: true }));
     this.#app.use(express.static(path.join(__dirname, "..", "public")));
+    // swagger config
+    const swaggerJsdoc = require("swagger-jsdoc");
+    const swaggerUI = require("swagger-ui-express");
     this.#app.use(
       "/api-doc",
       swaggerUI.serve,
@@ -45,6 +47,9 @@ module.exports = class Application {
         })
       )
     );
+    // morgen config
+    const morgan = require("morgan");
+    this.#app.use(morgan("dev"));
   }
   createServer() {
     const http = require("http");
@@ -53,9 +58,22 @@ module.exports = class Application {
     });
   }
   connectToMongoDB() {
+    // mongoose connection
     mongoose.connect(this.#DB_URI, (error) => {
       if (!error) return console.log("connect to mongoDB on " + this.#DB_URI);
-      return console.log("failed to connect");
+      return console.log(`failed to connect reason : ${error.message}`);
+    });
+    // mongoose event
+    mongoose.connection.on("connected", () => {
+      console.log("mongoose connected to mongodb");
+    });
+    mongoose.connection.on("disconnected", () => {
+      console.log("mongoose connection is disconnected");
+    });
+    process.on("SIGINT", async () => {
+      await mongoose.connection.close();
+      console.log("mongoose disconnected");
+      process.exit(0);
     });
   }
   createRoutes() {
@@ -63,18 +81,20 @@ module.exports = class Application {
     this.#app.use(AllRoutes);
   }
   errorHandling() {
+    const createError = require("http-errors");
     this.#app.use((req, res, next) => {
-      return res.status(404).json({
-        statusCode: 404,
-        message: "آدرس مورد نظر یافت نشد",
-      });
+      next(createError.NotFound("آدرس مورد نظر یافت نشد"));
     });
     this.#app.use((error, req, res, next) => {
-      const statusCode = error.status || 500;
-      const message = error.message || "Internal Server Error";
+      const serverError=createError.InternalServerError();
+      const statusCode = error.status || serverError.status;
+      const message = error.message || serverError.message;
       return res.status(statusCode).json({
-        statusCode,
-        message,
+        // data: {},
+        errors: {
+          statusCode,
+          message,
+        },
       });
     });
   }
