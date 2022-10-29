@@ -50,6 +50,9 @@ module.exports = class Application {
     // morgen config
     const morgan = require("morgan");
     this.#app.use(morgan("dev"));
+    // cors config
+    const cors = require("cors");
+    this.#app.use(cors())
   }
   createServer() {
     const http = require("http");
@@ -86,7 +89,7 @@ module.exports = class Application {
       next(createError.NotFound("آدرس مورد نظر یافت نشد"));
     });
     this.#app.use((error, req, res, next) => {
-      const serverError=createError.InternalServerError();
+      const serverError = createError.InternalServerError();
       const statusCode = error.status || serverError.status;
       const message = error.message || serverError.message;
       return res.status(statusCode).json({
