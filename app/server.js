@@ -1,3 +1,4 @@
+const { timeStamp } = require("console");
 const express = require("express");
 const { default: mongoose } = require("mongoose");
 module.exports = class Application {
@@ -10,6 +11,7 @@ module.exports = class Application {
     this.configApplication();
     this.connectToMongoDB();
     this.createServer();
+    this.initRedis();
     this.createRoutes();
     this.errorHandling();
   }
@@ -78,6 +80,9 @@ module.exports = class Application {
       console.log("mongoose disconnected");
       process.exit(0);
     });
+  }
+  initRedis(){
+    const redisClient = require("./utils/init_redis");
   }
   createRoutes() {
     const { AllRoutes } = require("./router/router");

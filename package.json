@@ -4,7 +4,8 @@
   "description": "online menu",
   "main": "config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon config.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "mongoose": "^6.6.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.20",
+    "redis": "^4.4.0",
     "swagger-jsdoc": "^5.0.1",
     "swagger-ui-express": "^4.5.0"
   }
