@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const redisClient = require("../utils/init_redis");
-const { homeRoutes } = require("./api");
+const { homeRoutes } = require("./api/index.router");
 const { userAuthRoutes } = require("./user/auth.router");
 redisClient.set("key", "value", (err, reply) => {
   if (err) console.log(err.message);

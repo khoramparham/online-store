@@ -4,6 +4,8 @@ const Controller = require("./../../controller");
 const {
   createRandomNumberForOTP,
   signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
 } = require("../../../../utils/function");
 const { EXPIRES_IN, USER_ROLE } = require("../../../../utils/constants");
 // VALIDATORS
@@ -37,15 +39,17 @@ class UserAuthController extends Controller {
       const { mobile, code } = req.body;
       const user = await UserModel.findOne({ mobile });
       if (!user) throw createError.NotFound("کاربر یافت نشد");
-      const now = Date.now();
-      if (+user.otp.expiresIn < now)
-        throw createError.Unauthorized("کد شما منقضی شده");
+      const now = new Date().getTime();
       if (user.otp.code != code)
         throw createError.Unauthorized("کد ارسال شده صحیح نمی باشد");
+      if (+user.otp.expiresIn < now)
+        throw createError.Unauthorized("کد شما منقضی شده");
       const accessToken = await signAccessToken(user._id);
+      const newRefreshToken = await signRefreshToken(user._id);
       return res.json({
         data: {
           accessToken,
+          newRefreshToken,
         },
       });
     } catch (error) {
@@ -53,11 +57,28 @@ class UserAuthController extends Controller {
     }
   }
 
+  async refreshToken(req, res, next) {
+    try {
+      const { refreshToken } = req.body;
+      const mobile = await verifyRefreshToken(refreshToken);
+      const user = await UserModel.findOne({ mobile });
+      const accessToken = await signAccessToken(user._id);
+      const newRefreshToken = await signRefreshToken(user._id);
+      return res.json({
+        data: {
+          accessToken,
+          newRefreshToken,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
   async saveUser(mobile, code) {
     const now = new Date().getTime();
     let otp = {
       code,
-      expiresIn: EXPIRES_IN,
+      expiresIn: now + 120000,
     };
     const userExist = await this.checkExistUser(mobile);
     if (userExist) {

@@ -61,6 +61,30 @@ router.post("/get-otp", UserAuthController.getOTP);
  *                  description: Internal Server Error
  */
 router.post("/check-otp", UserAuthController.checkOTP);
+/**
+ * @swagger
+ *  /user/refreshToken:
+ *      post:
+ *          tags: [User-Authentication]
+ *          summary: get refreshToken
+ *          description: refreshToken
+ *          parameters:
+ *          -   name: refreshToken
+ *              in: formData
+ *              required: true
+ *              type: string
+ *              description: refresh token must be with out double quotation
+ *          responses:
+ *              201:
+ *                  description: success
+ *              400:
+ *                  description: bad Request
+ *              401:
+ *                  description: un authorization
+ *              500:
+ *                  description: Internal Server Error
+ */
+router.post("/refreshToken", UserAuthController.refreshToken);
 module.exports = {
   userAuthRoutes: router,
 };
