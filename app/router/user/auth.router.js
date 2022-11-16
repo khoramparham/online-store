@@ -84,7 +84,7 @@ router.post("/check-otp", UserAuthController.checkOTP);
  *              500:
  *                  description: Internal Server Error
  */
-router.post("/refreshToken", UserAuthController.refreshToken);
+router.post("/newRefreshToken", UserAuthController.newRefreshToken);
 module.exports = {
   userAuthRoutes: router,
 };

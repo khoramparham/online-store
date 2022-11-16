@@ -1,18 +1,16 @@
 const router = require("express").Router();
 const homeController = require("../../http/controller/api/home.controller");
-const {
-  verifyAccessToken,
-} = require("../../http/middlewares/verifyAccessToken");
+const { verifyAccessToken } = require("../../http/middlewares/verifyAccessToken");
 
 /**
  * @swagger
  *  tags:
- *      name: home 
+ *      name: home
  *      description: home api
  */
 /**
  * @swagger
- *  /:
+ *  //:
  *      get:
  *          tags: [home]
  *          summary: home

@@ -7,7 +7,7 @@ const {
   signRefreshToken,
   verifyRefreshToken,
 } = require("../../../../utils/function");
-const { EXPIRES_IN, USER_ROLE } = require("../../../../utils/constants");
+const { ROLES } = require("../../../../utils/constants");
 // VALIDATORS
 const { getOTP, checkOTP } = require("../../../validator/user/auth.schema");
 // MODELS
@@ -42,14 +42,13 @@ class UserAuthController extends Controller {
       const now = new Date().getTime();
       if (user.otp.code != code)
         throw createError.Unauthorized("کد ارسال شده صحیح نمی باشد");
-      if (+user.otp.expiresIn < now)
-        throw createError.Unauthorized("کد شما منقضی شده");
+      if (+user.otp.expiresIn < now) throw createError.Unauthorized("کد شما منقضی شده");
       const accessToken = await signAccessToken(user._id);
-      const newRefreshToken = await signRefreshToken(user._id);
+      const refreshToken = await signRefreshToken(user._id);
       return res.json({
         data: {
           accessToken,
-          newRefreshToken,
+          refreshToken,
         },
       });
     } catch (error) {
@@ -57,7 +56,7 @@ class UserAuthController extends Controller {
     }
   }
 
-  async refreshToken(req, res, next) {
+  async newRefreshToken(req, res, next) {
     try {
       const { refreshToken } = req.body;
       const mobile = await verifyRefreshToken(refreshToken);
@@ -74,6 +73,7 @@ class UserAuthController extends Controller {
       next(error);
     }
   }
+
   async saveUser(mobile, code) {
     const now = new Date().getTime();
     let otp = {
@@ -90,7 +90,7 @@ class UserAuthController extends Controller {
     return await UserModel.create({
       mobile,
       otp,
-      Role: USER_ROLE,
+      Role: ROLES.USER,
     });
   }
 
@@ -104,10 +104,7 @@ class UserAuthController extends Controller {
       if (["", " ", 0, null, undefined, "0", NaN].includes(objectData[key]))
         delete objectData[key];
     });
-    const updateResult = await UserModel.updateOne(
-      { mobile },
-      { $set: objectData }
-    );
+    const updateResult = await UserModel.updateOne({ mobile }, { $set: objectData });
     return !!updateResult.modifiedCount;
   }
 }

@@ -54,7 +54,7 @@ module.exports = class Application {
     this.#app.use(morgan("dev"));
     // cors config
     const cors = require("cors");
-    this.#app.use(cors())
+    this.#app.use(cors());
   }
   createServer() {
     const http = require("http");
@@ -81,8 +81,8 @@ module.exports = class Application {
       process.exit(0);
     });
   }
-  initRedis(){
-    const redisClient = require("./utils/init_redis");
+  initRedis() {
+    require("./utils/init_redis");
   }
   createRoutes() {
     const { AllRoutes } = require("./router/router");
