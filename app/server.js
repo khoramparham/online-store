@@ -1,4 +1,3 @@
-const { timeStamp } = require("console");
 const express = require("express");
 const { default: mongoose } = require("mongoose");
 module.exports = class Application {
@@ -34,10 +33,11 @@ module.exports = class Application {
               title: "Express API for online store ",
               version: "1.0.0",
               description: "This is a REST API application made with Express.",
-            },
-            contact: {
-              name: "parham khoram",
-              url: "https://www.linkedin.com/in/parhamkhoram",
+              contact: {
+                name: "parham khoram",
+                url: "https://www.linkedin.com/in/khoramparham",
+                email: "khoramparham@gmail.com",
+              },
             },
             servers: [
               {

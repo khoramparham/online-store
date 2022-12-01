@@ -1,5 +1,5 @@
-const createError = require("http-errors");
 const Controller = require("./../../controller");
+const createError = require("http-errors");
 // FUNCTIONS
 const {
   createRandomNumberForOTP,
