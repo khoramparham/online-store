@@ -6,10 +6,10 @@ const { CategoryController } = require("../../http/controller/admin/category.con
  *      name: Admin-Category
  *      description: Category modules
  */
-router.post("/createCategory", CategoryController.createCategory);
+
 /**
  * @swagger
- * /admin/createCategory:
+ * /admin/category/create:
  *          post:
  *              tags: [Admin-category]
  *              summary: create category
@@ -38,19 +38,38 @@ router.post("/createCategory", CategoryController.createCategory);
  *                  500:
  *                      description: Internal Server Error
  */
-router.get("/getCategoryByID/:id", CategoryController.getCategoryByID);
+router.post("/create", CategoryController.createCategory);
 /**
  * @swagger
- * /admin/getCategoryByID/{id}:
+ *  /admin/category/getParent:
+ *          get:
+ *              tags: [Admin-category]
+ *              summary: get parent category
+ *              responses:
+ *                  200:
+ *                      description: success
+ *                  400:
+ *                      description: bad Request
+ *                  401:
+ *                      description: un authorization
+ *                  404:
+ *                      description: not found
+ *                  500:
+ *                      description: Internal Server Error
+ */
+router.get("/getParent", CategoryController.getParent);
+/**
+ * @swagger
+ * /admin/category/getByID/{id}:
  *          get:
  *              tags: [Admin-category]
  *              summary: get category with id
  *              parameters:
- *              -   name: id
- *                  description: category id
- *                  in: path
+ *              -   in: path
+ *                  name: id
  *                  required: true
  *                  type: string
+ *                  description: category id
  *              responses:
  *                  200:
  *                      description: success
@@ -63,19 +82,13 @@ router.get("/getCategoryByID/:id", CategoryController.getCategoryByID);
  *                  500:
  *                      description: Internal Server Error
  */
-router.get("/getCategoryBySlug/:slug", CategoryController.getCategoryBySlug);
+router.get("/getByID/:id", CategoryController.getCategoryByID);
 /**
  * @swagger
- * /admin/getCategoryBySlug/{slug}:
+ * /admin/category/getAllCategoryV1:
  *          get:
  *              tags: [Admin-category]
- *              summary: get category with slug name
- *              parameters:
- *              -   name: slug
- *                  description: slug name
- *                  in: path
- *                  required: true
- *                  type: string
+ *              summary: get category with lookup
  *              responses:
  *                  200:
  *                      description: success
@@ -88,25 +101,87 @@ router.get("/getCategoryBySlug/:slug", CategoryController.getCategoryBySlug);
  *                  500:
  *                      description: Internal Server Error
  */
-router.patch("/updateCategory", CategoryController.updateCategory);
+router.get("/getAllCategoryV1", CategoryController.getAllCategoryV1);
 /**
  * @swagger
- * /admin/updateCategory:
- *          patch:
+ * /admin/category/getAllCategoryV2:
+ *          get:
+ *              tags: [Admin-category]
+ *              summary: get category with by graphLookup
+ *              responses:
+ *                  200:
+ *                      description: success
+ *                  400:
+ *                      description: bad Request
+ *                  401:
+ *                      description: un authorization
+ *                  404:
+ *                      description: not found
+ *                  500:
+ *                      description: Internal Server Error
  */
-router.delete("/deleteCategoryByID/:id", CategoryController.deleteCategoryByID);
+router.get("/getAllCategoryV2", CategoryController.getAllCategoryV2);
 /**
  * @swagger
- * /admin/deleteCategoryByID/{id}:
+ * /admin/category/getAllCategory:
+ *          get:
+ *              tags: [Admin-category]
+ *              summary: get category with virtuals
+ *              responses:
+ *                  200:
+ *                      description: success
+ *                  400:
+ *                      description: bad Request
+ *                  401:
+ *                      description: un authorization
+ *                  404:
+ *                      description: not found
+ *                  500:
+ *                      description: Internal Server Error
+ */
+router.get("/getAllCategoryV3", CategoryController.getAllCategoryV3);
+/**
+ * @swagger
+ * /admin/category/update/{id}:
+ *          patch:
+ *              tags: [Admin-category]
+ *              summary: update category
+ *              parameters:
+ *              -   in: path
+ *                  name: id
+ *                  required: true
+ *                  type: string
+ *                  description: category id
+ *              -   in: formData
+ *                  name: title
+ *                  required: true
+ *                  type: string
+ *                  description: category title
+ *              responses:
+ *                  200:
+ *                      description: success
+ *                  400:
+ *                      description: bad Request
+ *                  401:
+ *                      description: un authorization
+ *                  404:
+ *                      description: not found
+ *                  500:
+ *                      description: Internal Server Error
+ */
+router.patch("/update/:id", CategoryController.updateCategory);
+/**
+ * @swagger
+ * /admin/category/deleteByID/{id}:
  *          delete:
  *              tags: [Admin-category]
- *              summary: get category with id
+ *              summary: get category with object id
  *              parameters:
- *              -   name: id
- *                  description: category id
- *                  in: path
+ *              -   in: path
+ *                  name: id
  *                  required: true
  *                  type: string
+ *                  description: category id
  *              responses:
  *                  200:
  *                      description: success
@@ -119,4 +194,5 @@ router.delete("/deleteCategoryByID/:id", CategoryController.deleteCategoryByID);
  *                  500:
  *                      description: Internal Server Error
  */
-module.exports = { adminRoutes: router };
+router.delete("/deleteByID/:id", CategoryController.deleteByID);
+module.exports = { CategoryRoutes: router };

@@ -1,21 +1,26 @@
 const Controller = require("../controller");
 const createError = require("http-errors");
 // VALIDATORS
-const { createCategory } = require("../../validator/admin/category.schema");
+const {
+  createCategorySchema,
+  updateCategorySchema,
+} = require("../../validator/admin/category.schema");
 // MODELS
-
+const { default: mongoose } = require("mongoose");
 const { CategoryModel } = require("../../../models/category.model");
+
 class CategoryController extends Controller {
   async createCategory(req, res, next) {
     try {
-      await createCategory.validateAsync(req.body);
-      const { title, slug } = req.body;
-      const category = await CategoryModel.create({ title, slug });
+      await createCategorySchema.validateAsync(req.body);
+      const { title, parent } = req.body;
+      const category = await CategoryModel.create({ title, parent });
+      if (!category) throw createError.InternalServerError("خطا داخلی");
       return res.status(201).json({
         category: {
           _id: category._id,
           title: category.title,
-          slug: category.slug,
+          parent: category.parent,
         },
         status: 201,
         success: true,
@@ -25,17 +30,12 @@ class CategoryController extends Controller {
       next(error);
     }
   }
-  async getCategoryByID(req, res, next) {
+  async getParent(req, res, next) {
     try {
-      const categoryID = req.params.id;
-      const category = await CategoryModel.findById({ _id: categoryID });
-      if (!category) throw createError.NotFound("دسته بندی  یافت نشد");
+      const parents = await CategoryModel.find({ parent: undefined });
+      if (!parents) throw createError.NotFound("دسته بندی با موفقیت یافت نشد");
       return res.status(200).json({
-        category: {
-          _id: category._id,
-          title: category.title,
-          slug: category.slug,
-        },
+        category: parents,
         status: 200,
         success: true,
         message: "دسته بندی با موفقیت یافت شد",
@@ -44,16 +44,122 @@ class CategoryController extends Controller {
       next(error);
     }
   }
-  async getCategoryBySlug(req, res, next) {
+  async getCategoryByID(req, res, next) {
     try {
-      const slugName = req.params.slug;
-      const category = await CategoryModel.findOne({ slug: slugName });
+      const categoryID = req.params.id;
+      const category = await CategoryModel.aggregate([
+        {
+          $match: {
+            _id: mongoose.Types.ObjectId(categoryID),
+          },
+        },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "_id",
+            foreignField: "parent",
+            as: "children",
+          },
+        },
+        {
+          $project: {
+            __v: 0,
+            "children.__v": 0,
+            "children.parent": 0,
+          },
+        },
+      ]);
+      if (!category) throw createError.NotFound("دسته بندی  یافت نشد");
+      return res.status(200).json({
+        category,
+        status: 200,
+        success: true,
+        message: "دسته بندی با موفقیت یافت شد",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getAllCategoryV1(req, res, next) {
+    try {
+      const category = await CategoryModel.aggregate([
+        {
+          $lookup: {
+            from: "categories",
+            localField: "_id",
+            foreignField: "parent",
+            as: "children",
+          },
+        },
+        {
+          $project: {
+            __v: 0,
+            "children.__v": 0,
+            "children.parent": 0,
+          },
+        },
+        {
+          $match: {
+            parent: undefined,
+          },
+        },
+      ]);
+      if (!category) throw createError.NotFound("دسته بندی  یافت نشد");
+      return res.status(200).json({
+        category,
+        status: 200,
+        success: true,
+        message: "دسته بندی با موفقیت یافت شد",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getAllCategoryV2(req, res, next) {
+    try {
+      const category = await CategoryModel.aggregate([
+        {
+          $graphLookup: {
+            from: "categories",
+            startWith: "$_id",
+            connectFromField: "_id",
+            connectToField: "parent",
+            maxDepth: 5,
+            depthField: "depth",
+            as: "children",
+          },
+        },
+        {
+          $project: {
+            __v: 0,
+            "children.__v": 0,
+            "children.parent": 0,
+          },
+        },
+        {
+          $match: {
+            parent: undefined,
+          },
+        },
+      ]);
+      if (!category) throw createError.NotFound("دسته بندی  یافت نشد");
+      return res.status(200).json({
+        category,
+        status: 200,
+        success: true,
+        message: "دسته بندی با موفقیت یافت شد",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getAllCategoryV3(req, res, next) {
+    try {
+      const category = await CategoryModel.find({});
       if (!category) throw createError.NotFound("دسته بندی  یافت نشد");
       return res.status(200).json({
         category: {
-          _id: category._id,
-          title: category.title,
-          slug: category.slug,
+          category,
         },
         status: 200,
         success: true,
@@ -65,36 +171,33 @@ class CategoryController extends Controller {
   }
   async updateCategory(req, res, next) {
     try {
-      await createCategory.validateAsync(req.body);
-      const { categoryID, title, slug } = req.body;
-      // const categoryFind = await CategoryModel.findById({ categoryID });
-      const category = await CategoryModel.findByIdAndUpdate({ _id }, { title, slug });
-      if (!!categoryFind) throw createError.NotFound("دسته بندی یافت نشد");
-      return res.status(201).json({
-        category: {
-          _id: category._id,
-          title: category.title,
-          slug: category.slug,
-        },
-        status: 201,
+      await updateCategorySchema.validateAsync(req.body);
+      const categoryID = req.params.id;
+      const category = await CategoryModel.findOne({ categoryID });
+      if (!category) throw createError.NotFound("دسته بندی  یافت نشد");
+      const { title } = req.body;
+      const updatedCategory = await CategoryModel.updateOne(
+        { _id: categoryID },
+        { $set: { title } }
+      );
+      if (updatedCategory.modifiedCount == 0)
+        throw createError.InternalServerError("به روز رسانی انجام نشد");
+      return res.status(200).json({
+        status: 200,
         success: true,
-        message: "دسته بندی با موفقیت ایجاد شد",
+        message: "دسته بندی با موفقیت به روز شد",
       });
     } catch (error) {
       next(error);
     }
   }
-  async deleteCategoryByID(req, res, next) {
+  async deleteByID(req, res, next) {
     try {
       const categoryID = req.params.id;
       const category = await CategoryModel.findByIdAndDelete({ _id: categoryID });
       if (!category) throw createError.NotFound("دسته بندی  یافت نشد");
       return res.status(200).json({
-        category: {
-          _id: category._id,
-          title: category.title,
-          slug: category.slug,
-        },
+        category,
         status: 200,
         success: true,
         message: "دسته بندی با موفقیت حذف شد",
