@@ -10,7 +10,7 @@ const {
  */
 /**
  * @swagger
- *  /user/get-otp:
+ *  /user/auth/get-otp:
  *      post:
  *          tags: [User-Authentication]
  *          summary: login user in user panel with phone number
@@ -34,7 +34,7 @@ const {
 router.post("/get-otp", UserAuthController.getOTP);
 /**
  * @swagger
- *  /user/check-otp:
+ *  /user/auth/check-otp:
  *      post:
  *          tags: [User-Authentication]
  *          summary: check otp code
@@ -63,7 +63,7 @@ router.post("/get-otp", UserAuthController.getOTP);
 router.post("/check-otp", UserAuthController.checkOTP);
 /**
  * @swagger
- *  /user/refreshToken:
+ *  /user/auth/refreshToken:
  *      post:
  *          tags: [User-Authentication]
  *          summary: get refreshToken
@@ -85,4 +85,4 @@ router.post("/check-otp", UserAuthController.checkOTP);
  *                  description: Internal Server Error
  */
 router.post("/newRefreshToken", UserAuthController.newRefreshToken);
-module.exports = { userAuthRoutes: router };
+module.exports = { AuthRoutes: router };
