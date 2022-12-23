@@ -10,7 +10,7 @@ const { verifyAccessToken } = require("../../http/middlewares/verifyAccessToken"
  */
 /**
  * @swagger
- *  //:
+ *  /:
  *      get:
  *          tags: [home]
  *          summary: home
