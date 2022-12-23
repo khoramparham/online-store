@@ -63,7 +63,7 @@ router.post("/get-otp", UserAuthController.getOTP);
 router.post("/check-otp", UserAuthController.checkOTP);
 /**
  * @swagger
- *  /user/auth/refreshToken:
+ *  /user/auth/newRefreshToken:
  *      post:
  *          tags: [User-Authentication]
  *          summary: get refreshToken
