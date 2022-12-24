@@ -28,14 +28,20 @@ function createRoute(req) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const filePath = createRoute(req);
-    cb(null, filePath);
+    if (file?.originalname) {
+      const filePath = createRoute(req);
+      return cb(null, filePath);
+    }
+    cb(null, null);
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const fileName = String(new Date().getTime() + ext);
-    req.body.fileName = fileName;
-    cb(null, fileName);
+    if (file?.originalname) {
+      const ext = path.extname(file.originalname);
+      const fileName = String(new Date().getTime() + ext);
+      req.body.fileName = fileName;
+      return cb(null, fileName);
+    }
+    cb(null, null);
   },
 });
 function fileFilter(req, file, cb) {

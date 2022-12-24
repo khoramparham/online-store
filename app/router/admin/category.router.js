@@ -65,11 +65,11 @@ router.get("/getParent", CategoryController.getParent);
  *              tags: [Category(Admin Panel)]
  *              summary: get category with id
  *              parameters:
- *              -   in: path
- *                  name: id
- *                  required: true
- *                  type: string
- *                  description: category id
+ *                  -   in: path
+ *                      name: id
+ *                      required: true
+ *                      type: string
+ *                      description: category id
  *              responses:
  *                  200:
  *                      description: success
