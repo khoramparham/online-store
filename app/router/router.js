@@ -14,7 +14,7 @@ redisClient.get("key", (err, reply) => {
   console.log(reply);
 });
 // Routes
-router.use("/", verifyAccessToken, checkRole("ADMIN"), homeRoutes);
+router.use("/", homeRoutes);
 router.use("/user", UserRoutes);
-router.use("/admin", verifyAccessToken, checkRole("ADMIN"), AdminRoutes);
+router.use("/admin", AdminRoutes);
 module.exports = { AllRoutes: router };
