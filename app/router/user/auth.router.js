@@ -4,6 +4,39 @@ const {
 } = require("./../../http/controller/user/auth/auth.controller");
 /**
  * @swagger
+ *  components:
+ *      schemas:
+ *          GetOTP:
+ *              type: object
+ *              required:
+ *                  -   mobile
+ *              properties:
+ *                  mobile:
+ *                      type: string
+ *                      description: the user mobile for signup/signin
+ *          CheckOTP:
+ *              type: object
+ *              required:
+ *                  -   mobile
+ *                  -   code
+ *              properties:
+ *                  mobile:
+ *                      type: string
+ *                      description: the user mobile for signup/signin
+ *                  code:
+ *                      type: integer
+ *                      description: reviced code from getOTP
+ *          RefreshToken:
+ *              type: object
+ *              required:
+ *                  -   refreshToken
+ *              properties:
+ *                  refreshToken:
+ *                      type: string
+ *                      description: enter refresh-token for get fresh token and refresh-token
+ */
+/**
+ * @swagger
  *  tags:
  *      name: User-Authentication
  *      description: user authorization
@@ -15,12 +48,15 @@ const {
  *          tags: [User-Authentication]
  *          summary: login user in user panel with phone number
  *          description: one time password login
- *          parameters:
- *          -   name: mobile
- *              description: fa-IRI phone number
- *              in: formData
+ *          requestBody:
  *              required: true
- *              type: string
+ *              content:
+ *                  application/x-www-form-urlencoded:
+ *                      schema:
+ *                          $ref: '#/components/schemas/GetOTP'
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/GetOTP'
  *          responses:
  *              201:
  *                  description: success
@@ -39,19 +75,17 @@ router.post("/get-otp", UserAuthController.getOTP);
  *          tags: [User-Authentication]
  *          summary: check otp code
  *          description: one time password check
- *          parameters:
- *          -   name: mobile
- *              description: fa-IRI phone number
- *              in: formData
- *              required: true
- *              type: string
- *          -   name: code
- *              description: otp code
- *              in: formData
- *              required: true
- *              type: string
+ *          requestBody:
  *          responses:
- *              201:
+ *              required: true
+ *              content:
+ *                  application/x-www-form-urlencoded:
+ *                      schema:
+ *                          $ref: '#/components/schemas/CheckOTP'
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/CheckOTP'
+ *              200:
  *                  description: success
  *              400:
  *                  description: bad Request
@@ -63,17 +97,20 @@ router.post("/get-otp", UserAuthController.getOTP);
 router.post("/check-otp", UserAuthController.checkOTP);
 /**
  * @swagger
- *  /user/auth/refreshToken:
+ *  /user/auth/newRefreshToken:
  *      post:
  *          tags: [User-Authentication]
  *          summary: get refreshToken
  *          description: refreshToken
- *          parameters:
- *          -   name: refreshToken
- *              in: formData
+ *          requestBody:
  *              required: true
- *              type: string
- *              description: refresh token must be with out double quotation
+ *              content:
+ *                  application/x-www-form-urlencoded:
+ *                      schema:
+ *                          $ref: '#/components/schemas/RefreshToken'
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/RefreshToken'
  *          responses:
  *              201:
  *                  description: success

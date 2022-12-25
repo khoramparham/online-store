@@ -2,8 +2,24 @@ const router = require("express").Router();
 const { CategoryController } = require("../../http/controller/admin/category.controller");
 /**
  * @swagger
+ *  components:
+ *      schemas:
+ *          Category:
+ *              type: object
+ *              required:
+ *                  -   title
+ *              properties:
+ *                  title:
+ *                      type: string
+ *                      description: title of category
+ *                  parent:
+ *                      type: string
+ *                      description: id of category parent
+ */
+/**
+ * @swagger
  *  tags:
- *      name: Admin-Category
+ *      name: Category(Admin Panel)
  *      description: Category modules
  */
 
@@ -11,21 +27,13 @@ const { CategoryController } = require("../../http/controller/admin/category.con
  * @swagger
  * /admin/category/create:
  *          post:
- *              tags: [Admin-category]
+ *              tags: [Category(Admin Panel)]
  *              summary: create category
  *              requestBody:
  *                  content:
  *                      application/json:
  *                          schema:
- *                              type: object
- *                              properties:
- *                                 title:
- *                                     description: category name
- *                                     type: string
- *                                 slug:
- *                                     description: category slug
- *                                     required: false
- *                                     type: string
+ *                              $ref: '#/components/schemas/Category'
  *              responses:
  *                  201:
  *                      description: create success
@@ -43,7 +51,7 @@ router.post("/create", CategoryController.createCategory);
  * @swagger
  *  /admin/category/getParent:
  *          get:
- *              tags: [Admin-category]
+ *              tags: [Category(Admin Panel)]
  *              summary: get parent category
  *              responses:
  *                  200:
@@ -62,14 +70,14 @@ router.get("/getParent", CategoryController.getParent);
  * @swagger
  * /admin/category/getByID/{id}:
  *          get:
- *              tags: [Admin-category]
+ *              tags: [Category(Admin Panel)]
  *              summary: get category with id
  *              parameters:
- *              -   in: path
- *                  name: id
- *                  required: true
- *                  type: string
- *                  description: category id
+ *                  -   in: path
+ *                      name: id
+ *                      required: true
+ *                      type: string
+ *                      description: category id
  *              responses:
  *                  200:
  *                      description: success
@@ -87,7 +95,7 @@ router.get("/getByID/:id", CategoryController.getCategoryByID);
  * @swagger
  * /admin/category/getAllCategoryV1:
  *          get:
- *              tags: [Admin-category]
+ *              tags: [Category(Admin Panel)]
  *              summary: get category with lookup
  *              responses:
  *                  200:
@@ -106,7 +114,7 @@ router.get("/getAllCategoryV1", CategoryController.getAllCategoryV1);
  * @swagger
  * /admin/category/getAllCategoryV2:
  *          get:
- *              tags: [Admin-category]
+ *              tags: [Category(Admin Panel)]
  *              summary: get category with by graphLookup
  *              responses:
  *                  200:
@@ -123,10 +131,10 @@ router.get("/getAllCategoryV1", CategoryController.getAllCategoryV1);
 router.get("/getAllCategoryV2", CategoryController.getAllCategoryV2);
 /**
  * @swagger
- * /admin/category/getAllCategory:
+ * /admin/category/getAllCategoryV3:
  *          get:
- *              tags: [Admin-category]
- *              summary: get category with virtuals
+ *              tags: [Category(Admin Panel)]
+ *              summary: get category with virtual
  *              responses:
  *                  200:
  *                      description: success
@@ -144,7 +152,7 @@ router.get("/getAllCategoryV3", CategoryController.getAllCategoryV3);
  * @swagger
  * /admin/category/update/{id}:
  *          patch:
- *              tags: [Admin-category]
+ *              tags: [Category(Admin Panel)]
  *              summary: update category
  *              parameters:
  *              -   in: path
@@ -152,11 +160,11 @@ router.get("/getAllCategoryV3", CategoryController.getAllCategoryV3);
  *                  required: true
  *                  type: string
  *                  description: category id
- *              -   in: formData
- *                  name: title
- *                  required: true
- *                  type: string
- *                  description: category title
+ *              requestBody:
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: '#/components/schemas/Category'
  *              responses:
  *                  200:
  *                      description: success
@@ -174,7 +182,7 @@ router.patch("/update/:id", CategoryController.updateCategory);
  * @swagger
  * /admin/category/deleteByID/{id}:
  *          delete:
- *              tags: [Admin-category]
+ *              tags: [Category(Admin Panel)]
  *              summary: get category with object id
  *              parameters:
  *              -   in: path
