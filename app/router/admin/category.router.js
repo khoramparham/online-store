@@ -2,6 +2,22 @@ const router = require("express").Router();
 const { CategoryController } = require("../../http/controller/admin/category.controller");
 /**
  * @swagger
+ *  components:
+ *      schemas:
+ *          Category:
+ *              type: object
+ *              required:
+ *                  -   title
+ *              properties:
+ *                  title:
+ *                      type: string
+ *                      description: title of category
+ *                  parent:
+ *                      type: string
+ *                      description: id of category parent
+ */
+/**
+ * @swagger
  *  tags:
  *      name: Category(Admin Panel)
  *      description: Category modules
@@ -17,15 +33,7 @@ const { CategoryController } = require("../../http/controller/admin/category.con
  *                  content:
  *                      application/json:
  *                          schema:
- *                              type: object
- *                              properties:
- *                                 title:
- *                                     description: category name
- *                                     type: string
- *                                 slug:
- *                                     description: category slug
- *                                     required: false
- *                                     type: string
+ *                              $ref: '#/components/schemas/Category'
  *              responses:
  *                  201:
  *                      description: create success
@@ -152,11 +160,11 @@ router.get("/getAllCategoryV3", CategoryController.getAllCategoryV3);
  *                  required: true
  *                  type: string
  *                  description: category id
- *              -   in: formData
- *                  name: title
- *                  required: true
- *                  type: string
- *                  description: category title
+ *              requestBody:
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: '#/components/schemas/Category'
  *              responses:
  *                  200:
  *                      description: success

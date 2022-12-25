@@ -29,6 +29,7 @@ module.exports = class Application {
       swaggerUI.setup(
         swaggerJsdoc({
           swaggerDefinition: {
+            openapi: "3.0.0",
             info: {
               title: "Express API for online store ",
               version: "1.0.0",
@@ -46,7 +47,8 @@ module.exports = class Application {
             ],
           },
           apis: ["./app/router/**/*.router.js"],
-        })
+        }),
+        { explorer: true }
       )
     );
     // morgen config
