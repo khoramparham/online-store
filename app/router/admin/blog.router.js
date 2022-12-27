@@ -1,9 +1,62 @@
 const { AdminBlogController } = require("../../http/controller/admin/blog.controller");
 const { stringToArray } = require("../../http/middlewares/stringToArray");
 const { imageFile } = require("../../utils/multer");
-
 const router = require("express").Router();
 
+/**
+ * @swagger
+ *  components:
+ *      schemas:
+ *          Blog:
+ *              type: object
+ *              required:
+ *                  -   title
+ *                  -   short_text
+ *                  -   text
+ *                  -   tags
+ *                  -   category
+ *                  -   image
+ *              properties:
+ *                  title:
+ *                      type: string
+ *                      description: the title of category
+ *                  short_text:
+ *                      type: string
+ *                      description: the summary of text of blog
+ *                  text:
+ *                      type: string
+ *                      description: the text of blog
+ *                  tags:
+ *                      type: string
+ *                      description: the list of tags for example(tag1#tag2#tag_foo)
+ *                  category:
+ *                      type: string
+ *                      description: the id of category for foreinField in blog
+ *                  image:
+ *                      type: file
+ *                      description: the index picture of blog
+ *          BlogUpdate:
+ *              type: object
+ *              properties:
+ *                  title:
+ *                      type: string
+ *                      description: the title of category
+ *                  short_text:
+ *                      type: string
+ *                      description: the summary of text of blog
+ *                  text:
+ *                      type: string
+ *                      description: the text of blog
+ *                  tags:
+ *                      type: string
+ *                      description: the list of tags for example(tag1#tag2#tag_foo)
+ *                  category:
+ *                      type: string
+ *                      description: the id of category for foreinField in blog
+ *                  image:
+ *                      type: file
+ *                      description: the index picture of blog
+ */
 /**
  * @swagger
  *  tags:
@@ -17,38 +70,15 @@ const router = require("express").Router();
  *      post:
  *          tags: [Blog(Admin Panel)]
  *          summary: create blog doc
- *          consumer:
- *              - multipart/form-data
- *              - application/x-www-form-data-urlencoded
- *          parameters:
- *          -   in: formData
- *              name: title
+ *          requestBody:
  *              required: true
- *              type: string
- *          -   in: formData
- *              name: text
- *              required: true
- *              type: string
- *          -   in: formData
- *              name: short_text
- *              required: true
- *              type: string
- *          -   in: formData
- *              name: image
- *              required: true
- *              type: file
- *          -   in: formData
- *              name: tags
- *              required: true
- *              type: string
- *              example: tag1#tag2#tag3_foo#foo_bar || str || undefined
- *          -   in: formData
- *              name: category
- *              required: true
- *              type: string
+ *              content:
+ *                  multipart/form-data:
+ *                      schema:
+ *                          $ref: '#/components/schemas/Blog'
  *          responses:
  *                  201:
- *                      description: create
+ *                      description: created
  *                  400:
  *                      description: bad Request
  *                  401:
@@ -139,34 +169,12 @@ router.get("/getAllBlog", AdminBlogController.getAllBlog);
  *      patch:
  *          tags: [Blog(Admin Panel)]
  *          summary: update blog
- *          consumer:
- *              - multipart/form-data
- *              - application/x-www-form-data-urlencoded
- *          parameters:
- *          -   in: path
- *              name: id
+ *          requestBody:
  *              required: true
- *              type: string
- *              description: blog id
- *          -   in: formData
- *              name: title
- *              type: string
- *          -   in: formData
- *              name: text
- *              type: string
- *          -   in: formData
- *              name: short_text
- *              type: string
- *          -   in: formData
- *              name: image
- *              type: file
- *          -   in: formData
- *              name: tags
- *              type: string
- *              example: tag1#tag2#tag3_foo#foo_bar || str || undefined
- *          -   in: formData
- *              name: category
- *              type: string
+ *              content:
+ *                  multipart/form-data:
+ *                      schema:
+ *                          $ref: '#/components/schemas/BlogUpdate'
  *          responses:
  *                  201:
  *                      description: create

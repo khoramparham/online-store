@@ -76,7 +76,6 @@ router.post("/get-otp", UserAuthController.getOTP);
  *          summary: check otp code
  *          description: one time password check
  *          requestBody:
- *          responses:
  *              required: true
  *              content:
  *                  application/x-www-form-urlencoded:
@@ -85,6 +84,7 @@ router.post("/get-otp", UserAuthController.getOTP);
  *                  application/json:
  *                      schema:
  *                          $ref: '#/components/schemas/CheckOTP'
+ *          responses:
  *              200:
  *                  description: success
  *              400:
