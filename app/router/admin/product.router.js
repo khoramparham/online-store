@@ -1,8 +1,27 @@
 const router = require("express").Router();
 const { ProductController } = require("../../http/controller/admin/product.controller");
 const { stringToArray } = require("../../http/middlewares/stringToArray");
+const { verifyAccessToken } = require("../../http/middlewares/verifyAccessToken");
 const { imageFile } = require("../../utils/multer");
 
+/**
+ * @swagger
+ *  components:
+ *      schemas:
+ *          Color:
+ *              type: array
+ *              items:
+ *                  type: string
+ *                  enum:
+ *                      -   black
+ *                      -   white
+ *                      -   gray
+ *                      -   red
+ *                      -   blue
+ *                      -   green
+ *                      -   orange
+ *                      -   purple
+ */
 /**
  * @swagger
  *  components:
@@ -38,19 +57,20 @@ const { imageFile } = require("../../utils/multer");
  *                          format: binary
  *                  category:
  *                      type: string
- *                      description:
+ *                      description: the title of product
  *                  price:
  *                      type: number
- *                      description:
+ *                      description: the title of product
  *                  discount:
  *                      type: number
- *                      description:
+ *                      description: the title of product
  *                  count:
  *                      type: number
- *                      description:
+ *                      description: the title of product
  *                  type:
  *                      type: number
- *                      description:
+ *                      description: the type of product
+ *                      example: virtual - physical
  *                  weight:
  *                      type: number
  *                      description: the weight of product packet
@@ -63,6 +83,58 @@ const { imageFile } = require("../../utils/multer");
  *                  width:
  *                      type: number
  *                      description: the with of product packet
+ *                  colors:
+ *                      $ref: '#/components/schemas/Color'
+ *          Edit-Product:
+ *              type: object
+ *              properties:
+ *                  title:
+ *                      type: string
+ *                      description: the title of product
+ *                  short_text:
+ *                      type: string
+ *                      description: the short_text of product
+ *                  text:
+ *                      type: string
+ *                      description: the text of product
+ *                  tags:
+ *                      type: array
+ *                      description: the tags of product
+ *                  images:
+ *                      type: array
+ *                      items:
+ *                          type: string
+ *                          format: binary
+ *                  category:
+ *                      type: string
+ *                      description: the title of product
+ *                  price:
+ *                      type: number
+ *                      description: the title of product
+ *                  discount:
+ *                      type: number
+ *                      description: the title of product
+ *                  count:
+ *                      type: number
+ *                      description: the title of product
+ *                  type:
+ *                      type: number
+ *                      description: the type of product
+ *                      example: virtual - physical
+ *                  weight:
+ *                      type: number
+ *                      description: the weight of product packet
+ *                  height:
+ *                      type: number
+ *                      description: the height of product packet
+ *                  length:
+ *                      type: number
+ *                      description: the length of product packet
+ *                  width:
+ *                      type: number
+ *                      description: the with of product packet
+ *                  colors:
+ *                      $ref: '#/components/schemas/Color'
  */
 /**
  * @swagger
@@ -96,6 +168,7 @@ const { imageFile } = require("../../utils/multer");
  */
 router.post(
   "/create",
+  verifyAccessToken,
   imageFile.array("images", 10),
   stringToArray("tags"),
   ProductController.createProduct
@@ -146,6 +219,31 @@ router.get("/getByID/:id", ProductController.getAllProduct);
 router.get("/getAll", ProductController.getAllProduct);
 /**
  * @swagger
+ * /admin/product/searchProduct:
+ *      get:
+ *          tags: [Product(Admin Panel)]
+ *          summary: get All product
+ *          parameters:
+ *              -   in: query
+ *                  name: search
+ *                  required: true
+ *                  type: string
+ *                  description: text for search in title short_text and text
+ *          responses:
+ *                  200:
+ *                      description: success
+ *                  400:
+ *                      description: bad Request
+ *                  401:
+ *                      description: un authorization
+ *                  404:
+ *                      description: not found
+ *                  500:
+ *                      description: Internal Server Error
+ */
+router.get("/searchProduct", ProductController.searchProduct);
+/**
+ * @swagger
  * /admin/product/update/{id}:
  *      patch:
  *          tags: [Product(Admin Panel)]
@@ -161,7 +259,7 @@ router.get("/getAll", ProductController.getAllProduct);
  *              content:
  *                  multipart/form-data:
  *                      schema:
- *                          $ref: '#/components/schemas/Product'
+ *                          $ref: '#/components/schemas/Edit-Product'
  *          responses:
  *                  200:
  *                      description: success
@@ -174,7 +272,12 @@ router.get("/getAll", ProductController.getAllProduct);
  *                  500:
  *                      description: Internal Server Error
  */
-router.patch("/update/:id", ProductController.updateProduct);
+router.patch(
+  "/update/:id",
+  imageFile.array("images", 10),
+  stringToArray("tags"),
+  ProductController.updateProduct
+);
 /**
  * @swagger
  * /admin/product/delete/{id}:

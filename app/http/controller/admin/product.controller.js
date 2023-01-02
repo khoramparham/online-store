@@ -1,15 +1,32 @@
 const Controller = require("../controller");
 const createError = require("http-errors");
+const { StatusCodes } = require("http-status-codes");
 // Models
 const { ProductModel } = require("../../../models/product.model");
 // validators
 const { createProductSchema } = require("../../validator/admin/product.schema");
+const { idValidator } = require("../../validator/public.schema");
 // functions
 const {
   deleteFileInPublic,
   setFeatures,
   ListOfImagesFromRequest,
+  copyObject,
+  deleteInvalidPropertyInObject,
 } = require("../../../utils/function");
+const ProductBlackList = {
+  BOOKMARKS: "bookmarks",
+  LIKES: "likes",
+  DISLIKES: "dislikes",
+  COMMENTS: "comments",
+  SUPPLIER: "supplier",
+  WEIGHT: "weight",
+  WIDTH: "width",
+  LENGTH: "length",
+  HEIGHT: "height",
+  COLORS: "colors",
+};
+Object.freeze(ProductBlackList);
 
 class ProductController extends Controller {
   async createProduct(req, res, next) {
@@ -34,10 +51,10 @@ class ProductController extends Controller {
         supplier,
         type,
       });
-      return res.status(201).json({
+      return res.status(StatusCodes.CREATED).json({
         product,
         success: true,
-        statusCode: 200,
+        statusCode: StatusCodes.CREATED,
         message: "محصول با موفقیت ایجاد شد",
       });
     } catch (error) {
@@ -48,10 +65,25 @@ class ProductController extends Controller {
   async getAllProduct(req, res, next) {
     try {
       const product = await ProductModel.find({});
-      return res.status(200).json({
+      return res.status(StatusCodes.OK).json({
         product,
         success: true,
-        statusCode: 200,
+        statusCode: StatusCodes.OK,
+        message: "محصول با موفقیت یافت شد",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async searchProduct(req, res, next) {
+    try {
+      const search = req?.query?.search || "";
+      const product = await ProductModel.find({ $text: { $search: search } });
+      if (!product) throw createError.NotFound("محصول یافت نشد");
+      return res.status(StatusCodes.OK).json({
+        product,
+        success: true,
+        statusCode: StatusCodes.OK,
         message: "محصول با موفقیت یافت شد",
       });
     } catch (error) {
@@ -61,12 +93,11 @@ class ProductController extends Controller {
   async getProductByID(req, res, next) {
     try {
       const productID = req.params.id;
-      const product = await ProductModel.findById(productID);
-      if (!product) throw createError.NotFound("محصول یافت نشد");
-      return res.status(200).json({
+      const product = await this.findProductByID(productID);
+      return res.status(StatusCodes.OK).json({
         product,
         success: true,
-        statusCode: 200,
+        statusCode: StatusCodes.OK,
         message: "محصول با موفقیت یافت شد",
       });
     } catch (error) {
@@ -76,11 +107,22 @@ class ProductController extends Controller {
   async updateProduct(req, res, next) {
     try {
       const productID = req.params.id;
-      const {} = req.body;
-      res.status(200).json({
+      const product = await this.findProductByID(productID);
+      const data = copyObject(req.body);
+      data.images = ListOfImagesFromRequest(req?.files || [], req.body.fileUploadPath);
+      data.features = setFeatures(req.body);
+      let blackListFields = Object.values(ProductBlackList);
+      deleteInvalidPropertyInObject(data, blackListFields);
+      const updateProductResult = await ProductModel.updateOne(
+        { _id: product._id },
+        { $set: data }
+      );
+      if (updateProductResult.modifiedCount == 0)
+        throw { status: StatusCodes.INTERNAL_SERVER_ERROR, message: "خطای داخلی" };
+      res.status(StatusCodes.OK).json({
         success: true,
-        statusCode: 200,
-        message: "",
+        statusCode: StatusCodes.OK,
+        message: "محصول با موفقیت بروز شد",
       });
     } catch (error) {
       next(error);
@@ -93,15 +135,21 @@ class ProductController extends Controller {
       if (!product) throw createError.NotFound("محصول یافت نشد");
       if (product.deletedCount == 0)
         throw createError.InternalServerError("حذف انجام نشد");
-      return res.status(200).json({
+      return res.status(StatusCodes.OK).json({
         product,
         success: true,
-        statusCode: 200,
+        statusCode: StatusCodes.OK,
         message: "محصول با موفقیت حذف شد",
       });
     } catch (error) {
       next(error);
     }
+  }
+  async findProductByID(productID) {
+    const { id } = await idValidator.validateAsync({ id: productID });
+    const product = await ProductModel.findById(id);
+    if (!product) throw createError.NotFound("محصول یافت نشد");
+    return product;
   }
 }
 module.exports = {
