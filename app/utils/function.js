@@ -93,6 +93,9 @@ function deleteInvalidPropertyInObject(data = {}, blackListFields = []) {
     if (nullishData.includes(data[key])) delete data[key];
   });
 }
+function imageRequest(fileUploadPath, filename) {
+  return path.join(fileUploadPath, filename).replace(/\\/g, "/");
+}
 module.exports = {
   createRandomNumberForOTP,
   signAccessToken,
@@ -103,4 +106,5 @@ module.exports = {
   ListOfImagesFromRequest,
   copyObject,
   deleteInvalidPropertyInObject,
+  imageRequest,
 };
