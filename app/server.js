@@ -1,5 +1,6 @@
 const express = require("express");
 const { default: mongoose } = require("mongoose");
+require("dotenv").config();
 module.exports = class Application {
   #app = express();
   #DB_URI;
