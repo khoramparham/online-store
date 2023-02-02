@@ -14,6 +14,11 @@ router.post(
 router.get("/getAll", CourseController.getAllCourse);
 router.get("/search", CourseController.searchCourse);
 router.get("/get/:id", CourseController.getCourseByID);
-router.patch("/update/:id", CourseController.updateCourse);
+router.patch(
+  "/update/:id",
+  imageFile.single("image"),
+  stringToArray("tags"),
+  CourseController.updateCourse
+);
 router.delete("/delete/:id", CourseController.deleteCourse);
 module.exports = { CourseRoutes: router };
