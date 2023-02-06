@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-// const { getTimeOfCourse } = require("../utils/functions");
+const { getTimeOfCourse } = require("../utils/function");
 
 const Episodes = new mongoose.Schema(
   {
@@ -49,6 +49,9 @@ const CourseSchema = new mongoose.Schema(
 CourseSchema.index({ title: "text", short_text: "text", text: "text" });
 CourseSchema.virtual("imageURL").get(function () {
   return `${process.env.BASE_URL}:${process.env.APPLICATION_PORT}/${this.image}`;
+});
+CourseSchema.virtual("totalTime").get(function () {
+  return getTimeOfCourse(this.chapters || []);
 });
 module.exports = {
   CourseModel: mongoose.model("course", CourseSchema),
