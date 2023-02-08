@@ -5,8 +5,13 @@ module.exports = {
     SUPPLIER: "SUPPLIER",
   },
   MongoIDPattern: /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i,
-  ACCESS_TOKEN_SECRET_KEY:
-    "9A91E3A57365CD15DD0235BBDCE07F2FA8BDE9908C9249BBEF386A9B87881863",
-  REFRESH_TOKEN_SECRET_KEY:
-    "7267E6A2A1FA8BD28BAA7E0338B23A831C15BAAF19CE55601FA1F8EA76CF817D",
+  PERMISSIONS: Object.freeze({
+    USER: ["profile"],
+    ADMIN: ["all"],
+    SUPER_ADMIN: ["all"],
+    CONTENT_MANAGER: ["course", "blog", "category", "product"],
+    TEACHER: ["course", "blog"],
+    SUPPLIER: ["product"],
+    ALL: "all",
+  }),
 };
