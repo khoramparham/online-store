@@ -52,6 +52,16 @@ function fileFilter(req, file, cb) {
   }
   return cb(createError.BadRequest("فرمت ارسال شده صحیح نمی باشد"));
 }
+function videoFilter(req, file, cb) {
+  const ext = path.extname(file.originalname);
+  const mimetype = [".mp4", ".mpg", ".mov", ".mkv"];
+  if (mimetype.includes(ext)) {
+    return cb(null, true);
+  }
+  return cb(createError.BadRequest("فرمت ارسال شده صحیح نمی باشد"));
+}
 const maxSizeImg = 1 * 1000 * 1000;
+const maxSizeVideo = 300 * 1000 * 1000;
 const imageFile = multer({ storage, fileFilter, fileSize: maxSizeImg });
-module.exports = { imageFile };
+const videoFile = multer({ storage, videoFilter, fileSize: maxSizeVideo });
+module.exports = { imageFile, videoFile };

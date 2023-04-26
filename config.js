@@ -1,2 +1,2 @@
-const Application=require("./app/server");
-new Application(5000,"mongodb://127.0.0.1:27017/onlineShopDB")
+const Application = require("./app/server");
+new Application(process.env.APPLICATION_PORT, process.env.MONGO_HOST);
