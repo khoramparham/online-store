@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  server:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+      - redis
+  mongodb:
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - "27017:27017"
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+volumes:
+  mongodb: {}
