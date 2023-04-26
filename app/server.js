@@ -1,6 +1,13 @@
 const express = require("express");
 const { default: mongoose } = require("mongoose");
+const path = require("path");
 require("dotenv").config();
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUI = require("swagger-ui-express");
+const morgan = require("morgan");
+const cors = require("cors");
+const http = require("http");
+const createError = require("http-errors");
 module.exports = class Application {
   #app = express();
   #DB_URI;
@@ -17,13 +24,10 @@ module.exports = class Application {
   }
   configApplication() {
     // app config
-    const path = require("path");
     this.#app.use(express.json());
     this.#app.use(express.urlencoded({ extended: true }));
     this.#app.use(express.static(path.join(__dirname, "..", "public")));
     // swagger config
-    const swaggerJsdoc = require("swagger-jsdoc");
-    const swaggerUI = require("swagger-ui-express");
     this.#app.use(
       "/api-doc",
       swaggerUI.serve,
@@ -63,14 +67,11 @@ module.exports = class Application {
       )
     );
     // morgen config
-    const morgan = require("morgan");
     this.#app.use(morgan("dev"));
     // cors config
-    const cors = require("cors");
     this.#app.use(cors());
   }
   createServer() {
-    const http = require("http");
     http.createServer(this.#app).listen(this.#PORT, () => {
       console.log("Server run on http://localhost:" + this.#PORT);
     });
@@ -102,7 +103,6 @@ module.exports = class Application {
     this.#app.use(AllRoutes);
   }
   errorHandling() {
-    const createError = require("http-errors");
     this.#app.use((req, res, next) => {
       next(createError.NotFound("آدرس مورد نظر یافت نشد"));
     });

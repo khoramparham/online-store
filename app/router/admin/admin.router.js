@@ -1,7 +1,7 @@
 const router = require("express").Router();
 // routes
 const { CategoryRoutes } = require("./category.router");
-const { BlogRoutes } = require("./Blog.router");
+const { BlogRoutes } = require("./blog.router");
 const { ProductRoutes } = require("./product.router");
 const { CourseRoutes } = require("./course.router");
 const { ChapterRoutes } = require("./chapter.router");
