@@ -77,6 +77,7 @@ module.exports = class Application {
     });
   }
   connectToMongoDB() {
+    mongoose.set("strictQuery", false);
     // mongoose connection
     mongoose.connect(this.#DB_URI, (error) => {
       if (!error) return console.log("connect to mongoDB on " + this.#DB_URI);
