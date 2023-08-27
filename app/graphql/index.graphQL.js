@@ -5,6 +5,7 @@ const {
   CategoryChildResolver,
 } = require("./queries/category.resolver");
 const { ProductResolver } = require("./queries/product.resolver");
+const { CourseResolver } = require("./queries/course.resolver");
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
@@ -13,6 +14,7 @@ const RootQuery = new GraphQLObjectType({
     products: ProductResolver,
     categories: CategoriesResolver,
     childOfCategory: CategoryChildResolver,
+    courses: CourseResolver,
   },
 });
 const RootMutation = new GraphQLObjectType({
