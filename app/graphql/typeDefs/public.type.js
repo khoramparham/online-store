@@ -4,6 +4,7 @@ const {
   GraphQLList,
   GraphQLScalarType,
 } = require("graphql");
+const { toObject, parseLiteral } = require("../utils");
 
 const AuthorType = new GraphQLObjectType({
   name: "AuthorType",
@@ -15,9 +16,9 @@ const AuthorType = new GraphQLObjectType({
 });
 const AnyType = new GraphQLScalarType({
   name: "anyType",
-  // parseValue: toObject,
-  // serialize: toObject,
-  // parseLiteral: parseLiteral,
+  parseValue: toObject,
+  serialize: toObject,
+  parseLiteral: parseLiteral,
 });
 const PublicCategoryType = new GraphQLObjectType({
   name: "PublicCategoryType",
