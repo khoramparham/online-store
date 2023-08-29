@@ -4,7 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const redisClient = require("./init_redis");
 const { UserModel } = require("../models/user.model");
-const { ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY } = require("./constants");
 function createRandomNumberForOTP() {
   return Math.floor(Math.random() * 89999) + 10000;
 }
@@ -17,7 +16,7 @@ async function signAccessToken(userID) {
   const options = {
     expiresIn: "1h",
   };
-  const token = JWT.sign(payLoad, ACCESS_TOKEN_SECRET_KEY, options);
+  const token = JWT.sign(payLoad, process.env.ACCESS_TOKEN_SECRET_KEY, options);
   return token;
 }
 
@@ -29,14 +28,14 @@ async function signRefreshToken(userID) {
   const options = {
     expiresIn: "1y",
   };
-  const token = JWT.sign(payLoad, REFRESH_TOKEN_SECRET_KEY, options);
+  const token = JWT.sign(payLoad, process.env.REFRESH_TOKEN_SECRET_KEY, options);
   await redisClient.set(userID.toString(), token, { EX: 31536000 });
   return token;
 }
 
 function verifyRefreshToken(token) {
   return new Promise((resolve, reject) => {
-    JWT.verify(token, REFRESH_TOKEN_SECRET_KEY, async (err, payload) => {
+    JWT.verify(token, process.env.REFRESH_TOKEN_SECRET_KEY, async (err, payload) => {
       if (err) reject(createError.Unauthorized("وارد حساب کاربری خود شوید"));
       const { mobile } = payload || {};
       const user = await UserModel.findOne({ mobile }, { password: 0, otp: 0 });
