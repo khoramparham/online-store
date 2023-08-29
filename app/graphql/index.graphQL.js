@@ -6,6 +6,7 @@ const {
 } = require("./queries/category.resolver");
 const { ProductResolver } = require("./queries/product.resolver");
 const { CourseResolver } = require("./queries/course.resolver");
+const { CreateCommentForBlog } = require("./mutations/comment.resolver");
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
@@ -19,10 +20,10 @@ const RootQuery = new GraphQLObjectType({
 });
 const RootMutation = new GraphQLObjectType({
   name: "Mutation",
-  fields: {},
+  fields: { CreateCommentForBlog },
 });
 const graphQLSchema = new GraphQLSchema({
   query: RootQuery,
-  // mutation: RootMutation,
+  mutation: RootMutation,
 });
 module.exports = { graphQLSchema };

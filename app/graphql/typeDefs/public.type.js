@@ -6,14 +6,15 @@ const {
 } = require("graphql");
 const { toObject, parseLiteral } = require("../utils");
 
-const AuthorType = new GraphQLObjectType({
-  name: "AuthorType",
+const UserType = new GraphQLObjectType({
+  name: "UserType",
   fields: {
     _id: { type: GraphQLString },
     first_name: { type: GraphQLString },
-    first_last: { type: GraphQLString },
+    last_name: { type: GraphQLString },
   },
 });
+
 const AnyType = new GraphQLScalarType({
   name: "anyType",
   parseValue: toObject,
@@ -27,4 +28,11 @@ const PublicCategoryType = new GraphQLObjectType({
     title: { type: GraphQLString },
   },
 });
-module.exports = { AuthorType, AnyType, PublicCategoryType };
+const ResponseType = new GraphQLObjectType({
+  name: "responseType",
+  fields: {
+    statusCode: { type: GraphQLString },
+    data: { type: AnyType },
+  },
+});
+module.exports = { UserType, AnyType, PublicCategoryType, ResponseType };
