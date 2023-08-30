@@ -1,4 +1,5 @@
 const { default: mongoose } = require("mongoose");
+const { CommentSchema } = require("./comment.model");
 
 const ProductModel = new mongoose.Schema(
   {
@@ -8,7 +9,7 @@ const ProductModel = new mongoose.Schema(
     images: { type: [String], required: true },
     tags: { type: [String], default: [] },
     category: { type: mongoose.Types.ObjectId, ref: "category", required: true },
-    comments: { type: [mongoose.Types.ObjectId], ref: "comment", default: [] },
+    comments: { type: [CommentSchema], default: [] },
     likes: { type: [mongoose.Types.ObjectId], ref: "user", default: [] },
     dislikes: { type: [mongoose.Types.ObjectId], ref: "user", default: [] },
     bookmarks: { type: [mongoose.Types.ObjectId], ref: "user", default: [] },

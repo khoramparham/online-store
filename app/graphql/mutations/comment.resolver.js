@@ -10,6 +10,7 @@ const { ResponseType } = require("../typeDefs/public.type");
 // Models
 const { BlogModel } = require("../../models/blog.model");
 const { CourseModel } = require("../../models/course.model");
+const { ProductModel } = require("../../models/product.model");
 
 const CreateCommentForBlog = {
   type: ResponseType,
@@ -89,7 +90,7 @@ const CreateCommentForCourse = {
     const user = await VerifyAccessTokenInGraphQL(req);
     const { comment, courseID, parent } = args;
     if (!mongoose.isValidObjectId(courseID))
-      throw createHttpError.BadGateway("شناسه بلاگ ارسال شده صحیح نمیباشد");
+      throw createHttpError.BadGateway("شناسه درس ارسال شده صحیح نمیباشد");
     await checkExistCourse(courseID);
     if (parent && mongoose.isValidObjectId(parent)) {
       const commentDocument = await getComment(CourseModel, parent);
@@ -143,6 +144,72 @@ const CreateCommentForCourse = {
     }
   },
 };
+const CreateCommentForProduct = {
+  type: ResponseType,
+  args: {
+    comment: { type: GraphQLString },
+    productID: { type: GraphQLString },
+    parent: { type: GraphQLString },
+  },
+  resolve: async (_, args, context) => {
+    const { req } = context;
+    const user = await VerifyAccessTokenInGraphQL(req);
+    const { comment, productID, parent } = args;
+    if (!mongoose.isValidObjectId(productID))
+      throw createHttpError.BadGateway("شناسه محصول ارسال شده صحیح نمیباشد");
+    await checkExistProduct(productID);
+    if (parent && mongoose.isValidObjectId(parent)) {
+      const commentDocument = await getComment(ProductModel, parent);
+      if (commentDocument && !commentDocument?.openToComment)
+        throw createHttpError.BadRequest("ثبت پاسخ مجاز نیست");
+      const createAnswerResult = await ProductModel.updateOne(
+        {
+          _id: productID,
+          "comments._id": parent,
+        },
+        {
+          $push: {
+            "comments.$.answers": {
+              comment,
+              user: user._id,
+              show: false,
+              openToComment: false,
+            },
+          },
+        }
+      );
+      if (!createAnswerResult.modifiedCount) {
+        throw createHttpError.InternalServerError("ثبت پاسخ انجام نشد");
+      }
+      return {
+        statusCode: HttpStatus.CREATED,
+        data: {
+          message: "پاسخ شما با موفقیت ثبت شد",
+        },
+      };
+    } else {
+      await ProductModel.updateOne(
+        { _id: productID },
+        {
+          $push: {
+            comments: {
+              comment,
+              user: user._id,
+              show: false,
+              openToComment: true,
+            },
+          },
+        }
+      );
+      return {
+        statusCode: HttpStatus.CREATED,
+        data: {
+          message: "ثبت نظر با موفقیت انجام شد پس از تایید در وبسایت قرار میگیرد",
+        },
+      };
+    }
+  },
+};
 
 async function getComment(model, id) {
   const findedComment = await model.findOne({ "comments._id": id }, { "comments.$": 1 });
@@ -163,4 +230,15 @@ async function checkExistBlog(id) {
   if (!blog) throw createHttpError.NotFound("بلاگی با این مشخصات یافت نشد");
   return blog;
 }
-module.exports = { CreateCommentForBlog, CreateCommentForCourse };
+
+async function checkExistProduct(id) {
+  const blog = await ProductModel.findById(id);
+  if (!blog) throw createHttpError.NotFound("بلاگی با این مشخصات یافت نشد");
+  return blog;
+}
+
+module.exports = {
+  CreateCommentForBlog,
+  CreateCommentForCourse,
+  CreateCommentForProduct,
+};
