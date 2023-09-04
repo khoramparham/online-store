@@ -7,6 +7,9 @@ const { ResponseType } = require("../typeDefs/public.type");
 const { CourseModel } = require("../../models/course.model");
 const { BlogModel } = require("../../models/blog.model");
 const { ProductModel } = require("../../models/product.model");
+const {
+  VerifyAccessTokenInGraphQL,
+} = require("../../http/middlewares/verifyAccessToken");
 
 const LikeProduct = {
   type: ResponseType,
