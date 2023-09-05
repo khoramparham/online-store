@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const { getTimeOfCourse } = require("../utils/function");
+const { CommentSchema } = require("./comment.model");
 
 const Episodes = new mongoose.Schema(
   {
@@ -28,7 +29,7 @@ const CourseSchema = new mongoose.Schema(
     image: { type: String, required: true },
     tags: { type: [String], default: [] },
     category: { type: mongoose.Types.ObjectId, ref: "category", required: true },
-    comments: { type: [mongoose.Types.ObjectId], ref: "comment", default: [] },
+    comments: { type: [CommentSchema], default: [] },
     likes: { type: [mongoose.Types.ObjectId], ref: "user", default: [] },
     dislikes: { type: [mongoose.Types.ObjectId], ref: "user", default: [] },
     bookmarks: { type: [mongoose.Types.ObjectId], ref: "user", default: [] },
