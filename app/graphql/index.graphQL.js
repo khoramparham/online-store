@@ -22,6 +22,11 @@ const {
   BookMarkProduct,
   BookMarkCourse,
 } = require("./mutations/bookmark.resolver");
+const {
+  getUserBookmarkedBlogs,
+  getUserBookmarkedCourses,
+  getUserBookmarkedProducts,
+} = require("./queries/user-action.resolver");
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
   fields: {
@@ -30,6 +35,9 @@ const RootQuery = new GraphQLObjectType({
     categories: CategoriesResolver,
     childOfCategory: CategoryChildResolver,
     courses: CourseResolver,
+    getUserBookmarkedBlogs,
+    getUserBookmarkedCourses,
+    getUserBookmarkedProducts,
   },
 });
 const RootMutation = new GraphQLObjectType({
