@@ -26,7 +26,15 @@ const {
   getUserBookmarkedBlogs,
   getUserBookmarkedCourses,
   getUserBookmarkedProducts,
+  getUserBasket,
 } = require("./queries/user-action.resolver");
+const {
+  AddCourseToBasket,
+  AddProductToBasket,
+  RemoveCourseToBasket,
+  RemoveProductToBasket,
+} = require("./mutations/basket.resolver");
+
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
   fields: {
@@ -38,8 +46,10 @@ const RootQuery = new GraphQLObjectType({
     getUserBookmarkedBlogs,
     getUserBookmarkedCourses,
     getUserBookmarkedProducts,
+    getUserBasket,
   },
 });
+
 const RootMutation = new GraphQLObjectType({
   name: "Mutation",
   fields: {
@@ -55,6 +65,10 @@ const RootMutation = new GraphQLObjectType({
     BookMarkBlog,
     BookMarkProduct,
     BookMarkCourse,
+    AddCourseToBasket,
+    AddProductToBasket,
+    RemoveCourseToBasket,
+    RemoveProductToBasket,
   },
 });
 const graphQLSchema = new GraphQLSchema({
