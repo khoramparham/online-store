@@ -9,6 +9,7 @@ const { ResponseType } = require("../typeDefs/public.type");
 const { BlogModel } = require("../../models/blog.model");
 const { ProductModel } = require("../../models/product.model");
 const { CourseModel } = require("../../models/course.model");
+const createHttpError = require("http-errors");
 
 const BookMarkProduct = {
   type: ResponseType,
