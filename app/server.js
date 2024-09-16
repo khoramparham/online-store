@@ -50,7 +50,7 @@ module.exports = class Application {
                 url: "http://localhost:5000",
               },
               {
-                url: "http://nodejs-online.liara.run",
+                url: "https://nodejs-online.liara.run",
               },
             ],
             components: {
